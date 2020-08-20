@@ -730,7 +730,6 @@ static const stb_feature_t features_dags4k[] =
 	},
 };
 
-
 static const stb_feature_t features_et10000[] =
 {
 	{
@@ -938,6 +937,116 @@ static const stb_feature_t features_h9[] =
 	},
 };
 
+static const stb_feature_t features_pixel[] =
+{
+	{
+		.type			= stb_traits_type_string_enum,
+		.description	= "Video codec",
+		.id				= "vcodec",
+		.settable		= false,
+		.api_data		= 0,
+		.value			=
+		{
+			.string_enum_type =
+			{
+				.default_value	= "h264",
+				.enum_values	=
+				{
+					"h264", 0,
+				},
+			},
+		},
+	},
+	{
+		.type			= stb_traits_type_string_enum,
+		.description	= "Audio codec",
+		.id				= "acodec",
+		.settable		= false,
+		.api_data		= 0,
+		.value			=
+		{
+			.string_enum_type =
+			{
+				.default_value	= "aac",
+				.enum_values	=
+				{
+					"aac", 0,
+				},
+			},
+		},
+	},
+	{
+		.type			= stb_traits_type_string_enum,
+		.description	= "Video codec profile",
+		.id				= "profile",
+		.settable		= true,
+		.api_data		= "profile",
+		.value			=
+		{
+			.string_enum_type =
+			{
+				.default_value	= "baseline",
+				.enum_values	=
+				{
+					"baseline", "main", "high", 0,
+				},
+			},
+		},
+	},
+	{
+		.type			= stb_traits_type_int,
+		.description	= "Total stream bit rate",
+		.id				= "bitrate",
+		.settable		= true,
+		.api_data		= "bitrate",
+		.value			=
+		{
+			.int_type =
+			{
+				.default_value	= 1000,
+				.min_value		= 100,
+				.max_value		= 10000,
+				.scaling_factor	= 1000,
+			},
+		},
+	},
+	{
+		.type			= stb_traits_type_string_enum,
+		.description	= "Picture dimensions",
+		.id				= "size",
+		.settable		= true,
+		.api_data		= "display_format",
+		.value			=
+		{
+			.string_enum_type =
+			{
+				.default_value	= "480p",
+				.enum_values	=
+				{
+					"480p", "576p", "720p", "1080p", 0,
+				},
+			},
+		},
+	},
+	{
+		.type			= stb_traits_type_string_enum,
+		.description	= "Frame rate",
+		.id				= "framerate",
+		.settable		= true,
+		.api_data		= "framerate",
+		.value			=
+		{
+			.string_enum_type =
+			{
+				.default_value	= "30",
+				.enum_values	=
+				{
+					"24", "25", "30", 0,
+				},
+			},
+		},
+	},
+};
 
 static const stb_feature_t features_generic[] =
 {
@@ -1186,6 +1295,22 @@ const stbs_traits_t stbs_traits =
 			},
 			.num_features		= 3,
 			.features			= features_h9,
+		},
+		{
+			.manufacturer		= "Atto",
+			.model				= "Pixel",
+			.chipset			= "hi3798cv200",
+			.transcoding_type	= stb_transcoding_broadcom,
+			.quirks				= (stb_quirks_t)0,
+			.encoders			= 3,
+			.num_id				= 2,
+			.id					=
+			{
+				{ "/proc/stb/info/model", "pixel" },
+				{ "/proc/stb/info/boxtype", "hisilicon" },
+			},
+			.num_features		= 6,
+			.features			= features_pixel,
 		},
 		{
 			.manufacturer		= "generic",

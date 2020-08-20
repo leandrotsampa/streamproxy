@@ -78,36 +78,63 @@ EncoderBroadcom::EncoderBroadcom(const PidMap &pids_in,
 	// requests are sent from a single http client, resulting in multiple
 	// streamproxy threads, all of them having the encoder open
 	// for a short while
-
-	if(stb_traits.encoders > 0)
+	if(strcmp(stb_traits.manufacturer, "Atto") != 0)
 	{
-		for(attempt = 0; attempt < 64; attempt++)
+		if(stb_traits.encoders > 0)
 		{
-			if((fd = open("/dev/bcm_enc0", O_RDWR, 0)) >= 0)
+			for(attempt = 0; attempt < 64; attempt++)
 			{
-				encoder = 0;
-				Util::vlog("EncoderBroadcom: bcm_enc0 open");
-				break;
+				if((fd = open("/dev/bcm_enc0", O_RDWR, 0)) >= 0)
+				{
+					encoder = 0;
+					Util::vlog("EncoderBroadcom: bcm_enc0 open");
+					break;
+				}
+
+				Util::vlog("EncoderBroadcom: waiting for encoder 0 to become available, attempt %d", attempt);
+
+				usleep(100000);
 			}
+		}
 
-			Util::vlog("EncoderBroadcom: waiting for encoder 0 to become available, attempt %d", attempt);
+		if((stb_traits.encoders > 1) && (encoder < 0))
+		{
+			for(attempt = 0; attempt < 64; attempt++)
+			{
+				if((fd = open("/dev/bcm_enc1", O_RDWR, 0)) >= 0)
+				{
+					encoder = 1;
+					Util::vlog("EncoderBroadcom: bcm_enc1 open");
+					break;
+				}
 
-			usleep(100000);
+				Util::vlog("EncoderBroadcom: waiting for encoder 1 to become available, attempt %d", attempt);
+
+				usleep(100000);
+			}
 		}
 	}
-
-	if((stb_traits.encoders > 1) && (encoder < 0))
+	else
 	{
 		for(attempt = 0; attempt < 64; attempt++)
 		{
-			if((fd = open("/dev/bcm_enc1", O_RDWR, 0)) >= 0)
+			int index;
+			for(index = 0; index < stb_traits.encoders; index++)
 			{
-				encoder = 1;
-				Util::vlog("EncoderBroadcom: bcm_enc1 open");
-				break;
+				char enc_path[32];
+				sprintf(enc_path, "/dev/player/encoder%d", index);
+				if((fd = open(enc_path, O_RDWR, 0)) >= 0)
+				{
+					encoder = index;
+					Util::vlog("EncoderBroadcom: %s open", enc_path);
+					break;
+				}
 			}
 
-			Util::vlog("EncoderBroadcom: waiting for encoder 1 to become available, attempt %d", attempt);
+			if(encoder != -1)
+				break;
+
+			Util::vlog("EncoderBroadcom: waiting for encoder to become available");
 
 			usleep(100000);
 		}
