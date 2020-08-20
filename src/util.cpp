@@ -17,6 +17,7 @@ using std::ios;
 
 #include <sstream>
 #include <iomanip>
+#include <vector>
 using std::stringstream;
 using std::istringstream;
 using std::ostringstream;
@@ -25,6 +26,7 @@ using std::setfill;
 using std::setw;
 using std::fixed;
 using std::setprecision;
+using std::vector;
 
 bool Util::foreground = false;
 
@@ -135,4 +137,22 @@ uint64_t Util::string_to_uint(string in)
 	}
 
 	return(rv);
+}
+
+vector<string> Util::split_string(string str, string delimiter)
+{
+	string token;
+	vector<string> list;
+	size_t pos = 0;
+
+	while ((pos = str.find(delimiter)) != string::npos)
+	{
+		token = str.substr(0, pos);
+		if (!token.empty())
+			list.push_back(token);
+		str.erase(0, pos + delimiter.length());
+	}
+
+	list.push_back(str);
+	return list;
 }

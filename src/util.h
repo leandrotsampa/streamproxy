@@ -5,6 +5,7 @@
 
 #include <stdint.h>
 #include <string>
+#include <vector>
 
 class Util
 {
@@ -20,5 +21,6 @@ class Util
 		static uint64_t		string_to_uint(std::string);
 		static std::string	float_to_string(double, int);
 		static double		string_to_float(std::string);
+		static std::vector<std::string> split_string(std::string str, std::string delimiter);
 };
 #endif

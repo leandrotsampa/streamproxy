@@ -4,8 +4,12 @@
 #include "types.h"
 #include "util.h"
 
+#include <fstream>
 #include <string>
+#include <vector>
+using std::ifstream;
 using std::string;
+using std::vector;
 
 #include <stdio.h>
 #include <unistd.h>
@@ -19,7 +23,6 @@ using std::string;
 
 Demuxer::Demuxer(int id_in, const PidMap &pidmap)
 {
-	PidMap::const_iterator	demux_it;
 	PidMap::const_iterator	it;
 	PidMap::iterator		it2;
 
@@ -51,10 +54,49 @@ Demuxer::Demuxer(int id_in, const PidMap &pidmap)
 			(pids.find("video") == pids.end()) || (pids.find("audio") == pids.end()))
 		throw(trap("Demuxer: missing primary pids"));
 
-	demuxer_device = string("/dev/dvb/adapter0/demux") + Util::int_to_string(id);
+	ifstream demux_chan("/proc/msp/demux_chan");
+	if(demux_chan.is_open())
+	{
+		std::string line;
+		while(getline(demux_chan, line))
+		{
+			vector<string> groups = Util::split_string(line, "\t");
+			if(groups.size() > 0)
+			{
+				vector<string> values = Util::split_string(groups[0], " ");
+				if(values.size() >= 3)
+				{
+					int64_t adapter_id = Util::string_to_int(values[0]);
+					if(adapter_id < 0 || adapter_id >= 4)
+						continue;
+					if(values[2].compare("0x" + Util::hex_to_string(pids["pmt"], 0)) == 0)
+					{
+						if(adapter_id == 3)
+						{
+							demuxer_device = string("/dev/dvb/adapter") + Util::int_to_string(adapter_id) + string("/demux") + Util::int_to_string(id);
+							ifstream adapter(demuxer_device);
+							if (adapter.is_open())
+								adapter.close();
+							else
+								adapter_id--;
+						}
+
+						demuxer_device = string("/dev/dvb/adapter") + Util::int_to_string(adapter_id) + string("/demux") + Util::int_to_string(id);
+						break;
+					}
+				}
+			}
+		}
+		demux_chan.close();
+	}
+
+	if(demuxer_device.empty())
+		demuxer_device = string("/dev/dvb/adapter0/demux") + Util::int_to_string(id);
 
 	if((fd = open(demuxer_device.c_str(), O_RDWR | O_NONBLOCK)) < 0)
 		throw(trap("Demuxer: cannot open demuxer device"));
+	else
+		Util::vlog("Demuxer: %s", demuxer_device.c_str());
 
 	if(ioctl(fd, DMX_SET_BUFFER_SIZE, buffer_size))
 		throw(trap("Demuxer: cannot set buffer size"));
