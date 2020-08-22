@@ -161,6 +161,7 @@ int main(int argc, char *const argv[], char *const arge[])
 		ifstream								config_file("/etc/enigma2/streamproxy.conf");
 		string									option_default_size;
 		string									option_default_bitrate;
+		string									option_default_framerate;
 		string									option_default_profile;
 		string									option_default_level;
 		string									option_default_bframes;
@@ -180,6 +181,7 @@ int main(int argc, char *const argv[], char *const arge[])
 			("listen,l",		bpo::value<StringVector>(&listen_parameters),					"listen to tcp port with default action")
 			("size,s",			bpo::value<string>(&option_default_size),						"default transcoding frame size")
 			("bitrate,b",		bpo::value<string>(&option_default_bitrate),					"default transcoding bit rate")
+			("framerate,b",		bpo::value<string>(&option_default_framerate),					"default transcoding frame rate")
 			("profile,P",		bpo::value<string>(&option_default_profile),					"default transcoding h264 profile")
 			("level,L",			bpo::value<string>(&option_default_level),						"default transcoding h264 level")
 			("bframes,B",		bpo::value<string>(&option_default_bframes),					"default transcoding h264 b frames")
@@ -202,6 +204,7 @@ int main(int argc, char *const argv[], char *const arge[])
 		config_map["group"]			= ConfigValue(require_auth_group);
 		config_map["size"]			= ConfigValue(option_default_size);
 		config_map["bitrate"]		= ConfigValue(option_default_bitrate);
+		config_map["framerate"]		= ConfigValue(option_default_framerate);
 		config_map["profile"]		= ConfigValue(option_default_profile);
 		config_map["level"]			= ConfigValue(option_default_level);
 		config_map["bframes"]		= ConfigValue(option_default_bframes);
