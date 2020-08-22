@@ -1302,7 +1302,7 @@ const stbs_traits_t stbs_traits =
 			.chipset			= "hi3798cv200",
 			.transcoding_type	= stb_transcoding_broadcom,
 			.quirks				= (stb_quirks_t)0,
-			.encoders			= 3,
+			.encoders			= 1,
 			.num_id				= 2,
 			.id					=
 			{
