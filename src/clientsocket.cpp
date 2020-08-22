@@ -905,6 +905,11 @@ void ClientSocket::check_add_urlparams()
 				param = "size";
 				value = "720p";
 			}
+			else if(value == "1080")
+			{
+				param = "size";
+				value = "1080p";
+			}
 		}
 
 		if(get_feature_value(param, value, value_out, api_data))
